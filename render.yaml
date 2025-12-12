@@ -1,0 +1,21 @@
+services:
+  - type: web
+    name: gamma-backend
+    env: node
+    plan: free
+    buildCommand: npm ci --no-audit --no-fund
+    startCommand: npm run build && NODE_ENV=production node --loader tsx server/index.ts
+    healthCheckPath: /api/contact
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: SENDGRID_API_KEY
+        sync: false
+      - key: SENDGRID_FROM_EMAIL
+        value: noreply@gammainternationaltz.com
+      - key: CONTACT_RECIPIENTS
+        sync: false
+      - key: DATABASE_URL
+        sync: false
