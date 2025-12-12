@@ -1,10 +1,12 @@
+// /api/contact.ts
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import sgMail from '@sendgrid/mail';
 
-// Environment variables
+// Environment variables (set these on Render for backend, or Vercel for frontend)
 const SENDGRID_API_KEY = process.env.SENDGRID_API_KEY!;
 const SENDGRID_FROM_EMAIL = process.env.SENDGRID_FROM_EMAIL || 'hello.gitltz@gmail.com';
-const CONTACT_RECIPIENTS = process.env.CONTACT_RECIPIENTS?.split(',').map(s => s.trim()) || ['hello.gitltz@gmail.com'];
+const CONTACT_RECIPIENTS =
+  process.env.CONTACT_RECIPIENTS?.split(',').map(s => s.trim()) || ['hello.gitltz@gmail.com'];
 
 // Initialize SendGrid
 sgMail.setApiKey(SENDGRID_API_KEY);
@@ -46,6 +48,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.json({ success: true, message: "Thank you for your inquiry. We'll get back to you within 24 hours." });
   } catch (err: any) {
     console.error('SendGrid error:', err.response?.body || err.message || err);
-    return res.status(500).json({ success: false, message: err.message });
+    return res.status(500).json({ success: false, message: 'Failed to send email. Please try again later.' });
   }
 }

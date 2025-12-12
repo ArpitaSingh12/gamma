@@ -7,7 +7,6 @@ import { Label } from "@/components/ui/label";
 import { MapPin, Phone, Mail, Send } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useTranslation } from "@/contexts/LanguageContext";
-import { submitContactForm } from "@/lib/api";
 
 // Country dial codes for phone number selector
 const COUNTRY_DIAL_CODES = [
@@ -80,14 +79,32 @@ export default function Contact() {
     setIsSubmitting(true);
 
     try {
-      const data = await submitContactForm({
-        name: formData.name,
-        email: formData.email,
-        company: formData.company,
-        message: formData.message,
-        phoneCountryCode: formData.phoneCountryCode,
-        phoneNumber: formData.phoneNumber,
-      });
+      const API_URL = import.meta.env.VITE_API_URL || "https://gamma-fd1i.onrender.com";
+const response = await fetch(`${API_URL}/api/contact`, {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    name: formData.name,
+    email: formData.email,
+    company: formData.company,
+    message: formData.message,
+    phoneCountryCode: formData.phoneCountryCode,
+    phoneNumber: formData.phoneNumber,
+  }),
+});
+
+      let data: any = null;
+
+try {
+  data = await response.json(); // read JSON only ONCE
+} catch {
+  // backend returned no JSON body
+}
+
+if (!response.ok || !data?.success) {
+  throw new Error(data?.message || t("common.contactToastErrorGeneric"));
+}
+
 
       toast({
         title: t("common.contactToastSuccessTitle"),

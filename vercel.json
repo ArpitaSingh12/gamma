@@ -1,12 +1,5 @@
 {
-  "outputDirectory": "dist/public",
-  "env": {
-    "VITE_API_URL": "@vite_api_url"
-  },
   "rewrites": [
-    {
-      "source": "/(.*)",
-      "destination": "/index.html"
-    }
+    { "source": "/(.*)", "destination": "/" }
   ]
 }
