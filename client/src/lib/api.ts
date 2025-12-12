@@ -1,4 +1,10 @@
-const API_URL = import.meta.env.VITE_API_URL || 'https://gamma-fd1i.onrender.com';
+// lib/api.ts
+/**
+ * API service for communicating with backend
+ * Uses environment variable VITE_API_URL or falls back to localhost
+ */
+
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
 export async function submitContactForm(data: {
   name: string;
@@ -8,17 +14,26 @@ export async function submitContactForm(data: {
   phoneCountryCode?: string;
   phoneNumber?: string;
 }) {
-  const response = await fetch(`${API_URL}/api/contact`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(data),
-  });
+  try {
+    const response = await fetch(`${API_URL}/api/contact`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    });
 
-  if (!response.ok) {
-    throw new Error(`API error: ${response.statusText}`);
+    const result = await response.json();
+
+    if (!response.ok) {
+      throw new Error(result.message || `API error: ${response.status}`);
+    }
+
+    return result;
+  } catch (error: any) {
+    console.error('Contact form submission failed:', error);
+    throw new Error(error.message || 'Failed to submit contact form');
   }
-
-  return response.json();
 }
 
 export { API_URL };
