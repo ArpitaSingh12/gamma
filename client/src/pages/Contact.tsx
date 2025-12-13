@@ -79,32 +79,32 @@ export default function Contact() {
     setIsSubmitting(true);
 
     try {
-      const API_URL = import.meta.env.VITE_API_URL || "https://gamma-fd1i.onrender.com";
-const response = await fetch(`${API_URL}/api/contact`, {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({
-    name: formData.name,
-    email: formData.email,
-    company: formData.company,
-    message: formData.message,
-    phoneCountryCode: formData.phoneCountryCode,
-    phoneNumber: formData.phoneNumber,
-  }),
-});
+      // Use PHP endpoint from the same domain for Hostinger compatibility
+      const PHP_API_URL = import.meta.env.VITE_PHP_API_URL || `${window.location.origin}/api/contact.php`;
+      const response = await fetch(PHP_API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          company: formData.company,
+          message: formData.message,
+          phoneCountryCode: formData.phoneCountryCode,
+          phoneNumber: formData.phoneNumber,
+        }),
+      });
 
       let data: any = null;
 
-try {
-  data = await response.json(); // read JSON only ONCE
-} catch {
-  // backend returned no JSON body
-}
+      try {
+        data = await response.json(); // read JSON only ONCE
+      } catch {
+        // backend returned no JSON body
+      }
 
-if (!response.ok || !data?.success) {
-  throw new Error(data?.message || t("common.contactToastErrorGeneric"));
-}
-
+      if (!response.ok || !data?.success) {
+        throw new Error(data?.message || t("common.contactToastErrorGeneric"));
+      }
 
       toast({
         title: t("common.contactToastSuccessTitle"),
